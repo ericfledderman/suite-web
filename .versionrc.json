@@ -1,0 +1,5 @@
+{
+  "header": "# Changelog\n\n",
+  "preset": "conventionalcommits",
+  "releaseCommitMessageFormat": "chore(release): {{currentTag}}"
+}
