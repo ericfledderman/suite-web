@@ -1,97 +1,6 @@
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-
-// Field definitions
-// Summary:  required, min 2, max 64
-// Status:   required, options below, default "do"
-// Priority: required, options below, default "medium"
-
-const STATUS_OPTIONS = ["dont", "do", "doing", "done"] as const;
-const PRIORITY_OPTIONS = [
-  "low",
-  "medium",
-  "high",
-  "critical",
-  "urgent",
-] as const;
-
-type Status = (typeof STATUS_OPTIONS)[number];
-type Priority = (typeof PRIORITY_OPTIONS)[number];
-
-const DEFAULT_STATUS: Status = "do";
-const DEFAULT_PRIORITY: Priority = "medium";
-
-type Task = {
-  id: string;
-  summary: string;
-  status: Status;
-  priority: Priority;
-  due: string;
-};
-
-const tasks: Task[] = [
-  {
-    id: "TASK-8782",
-    summary: "Design homepage",
-    status: "doing",
-    priority: "high",
-    due: "Jul 10, 2026",
-  },
-  {
-    id: "TASK-7878",
-    summary: "Set up database",
-    status: "done",
-    priority: "critical",
-    due: "Jul 03, 2026",
-  },
-  {
-    id: "TASK-9012",
-    summary: "Write API endpoints",
-    status: "do",
-    priority: "medium",
-    due: "Jul 15, 2026",
-  },
-  {
-    id: "TASK-3390",
-    summary: "Configure CI/CD",
-    status: "dont",
-    priority: "low",
-    due: "Jul 18, 2026",
-  },
-  {
-    id: "TASK-4521",
-    summary: "User testing",
-    status: "doing",
-    priority: "urgent",
-    due: "Jul 20, 2026",
-  },
-];
-
-const statusVariant: Record<Status, "default" | "secondary" | "outline"> = {
-  done: "default",
-  doing: "secondary",
-  do: "outline",
-  dont: "outline",
-};
-
-const priorityVariant: Record<
-  Priority,
-  "default" | "destructive" | "secondary" | "outline"
-> = {
-  urgent: "destructive",
-  critical: "destructive",
-  high: "default",
-  medium: "secondary",
-  low: "outline",
-};
+import { columns } from "@/components/tasks/columns";
+import { DataTable } from "@/components/tasks/data-table";
+import { tasks } from "@/lib/tasks";
 
 export default function Home() {
   return (
@@ -106,41 +15,7 @@ export default function Home() {
           </p>
         </header>
 
-        <div className="overflow-x-auto rounded-lg border">
-          <Table>
-            <TableCaption className="pb-4">
-              {tasks.length} tasks total
-            </TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Summary</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead className="text-right">Due</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tasks.map((task) => (
-                <TableRow key={task.id}>
-                  <TableCell className="font-medium">{task.summary}</TableCell>
-                  <TableCell>
-                    <Badge variant={statusVariant[task.status]}>
-                      {task.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={priorityVariant[task.priority]}>
-                      {task.priority}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap text-right">
-                    {task.due}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <DataTable columns={columns} data={tasks} />
       </main>
     </div>
   );
