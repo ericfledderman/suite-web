@@ -9,13 +9,29 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-type Status = "To do" | "In progress" | "Done";
-type Priority = "Low" | "Medium" | "High";
+// Field definitions
+// Summary:  required, min 2, max 64
+// Status:   required, options below, default "do"
+// Priority: required, options below, default "medium"
+
+const STATUS_OPTIONS = ["dont", "do", "doing", "done"] as const;
+const PRIORITY_OPTIONS = [
+  "low",
+  "medium",
+  "high",
+  "critical",
+  "urgent",
+] as const;
+
+type Status = (typeof STATUS_OPTIONS)[number];
+type Priority = (typeof PRIORITY_OPTIONS)[number];
+
+const DEFAULT_STATUS: Status = "do";
+const DEFAULT_PRIORITY: Priority = "medium";
 
 type Task = {
   id: string;
-  title: string;
-  assignee: string;
+  summary: string;
   status: Status;
   priority: Priority;
   due: string;
@@ -24,59 +40,57 @@ type Task = {
 const tasks: Task[] = [
   {
     id: "TASK-8782",
-    title: "Design homepage",
-    assignee: "Alice",
-    status: "In progress",
-    priority: "High",
+    summary: "Design homepage",
+    status: "doing",
+    priority: "high",
     due: "Jul 10, 2026",
   },
   {
     id: "TASK-7878",
-    title: "Set up database",
-    assignee: "Bob",
-    status: "Done",
-    priority: "High",
+    summary: "Set up database",
+    status: "done",
+    priority: "critical",
     due: "Jul 03, 2026",
   },
   {
     id: "TASK-9012",
-    title: "Write API endpoints",
-    assignee: "Carol",
-    status: "To do",
-    priority: "Medium",
+    summary: "Write API endpoints",
+    status: "do",
+    priority: "medium",
     due: "Jul 15, 2026",
   },
   {
     id: "TASK-3390",
-    title: "Configure CI/CD",
-    assignee: "Dave",
-    status: "To do",
-    priority: "Medium",
+    summary: "Configure CI/CD",
+    status: "dont",
+    priority: "low",
     due: "Jul 18, 2026",
   },
   {
     id: "TASK-4521",
-    title: "User testing",
-    assignee: "Eve",
-    status: "In progress",
-    priority: "Low",
+    summary: "User testing",
+    status: "doing",
+    priority: "urgent",
     due: "Jul 20, 2026",
   },
 ];
 
 const statusVariant: Record<Status, "default" | "secondary" | "outline"> = {
-  Done: "default",
-  "In progress": "secondary",
-  "To do": "outline",
+  done: "default",
+  doing: "secondary",
+  do: "outline",
+  dont: "outline",
 };
 
 const priorityVariant: Record<
   Priority,
-  "destructive" | "secondary" | "outline"
+  "default" | "destructive" | "secondary" | "outline"
 > = {
-  High: "destructive",
-  Medium: "secondary",
-  Low: "outline",
+  urgent: "destructive",
+  critical: "destructive",
+  high: "default",
+  medium: "secondary",
+  low: "outline",
 };
 
 export default function Home() {
@@ -99,9 +113,7 @@ export default function Home() {
             </TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-28">ID</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Assignee</TableHead>
+                <TableHead>Summary</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Priority</TableHead>
                 <TableHead className="text-right">Due</TableHead>
@@ -110,11 +122,7 @@ export default function Home() {
             <TableBody>
               {tasks.map((task) => (
                 <TableRow key={task.id}>
-                  <TableCell className="font-mono text-xs text-muted-foreground">
-                    {task.id}
-                  </TableCell>
-                  <TableCell className="font-medium">{task.title}</TableCell>
-                  <TableCell>{task.assignee}</TableCell>
+                  <TableCell className="font-medium">{task.summary}</TableCell>
                   <TableCell>
                     <Badge variant={statusVariant[task.status]}>
                       {task.status}
